@@ -44,7 +44,7 @@ Parameters:
     Default: "us-west-2"
   TestingStackName:
     Type: String
-    Default: "ballard-blue-api-dev"
+    Default: "ballard-blue-dev"
   TestingPipelineExecutionRole:
     Type: String
     Default: "arn:aws:iam::654654614431:role/aws-sam-cli-managed-dev-pipel-PipelineExecutionRole-jw9NnGEJqrO3"
@@ -65,7 +65,7 @@ Parameters:
     Default: "us-west-2"
   ProdStackName:
     Type: String
-    Default: "ballard-blue-api-prod"
+    Default: "ballard-blue-prod"
   ProdPipelineExecutionRole:
     Type: String
     Default: "arn:aws:iam::654654614431:role/aws-sam-cli-managed-prod-pipe-PipelineExecutionRole-wAgYkHwb0Zw5"
