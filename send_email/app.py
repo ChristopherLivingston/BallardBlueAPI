@@ -5,7 +5,6 @@ from botocore.exceptions import ClientError
 
 ses_client = boto3.client('ses', region_name='us-west-2')
 
-
 #SENDER = os.environ['SENDER_EMAIL']  # Sender email address (must be verified in SES)
 #RECIPIENT = os.environ['RECIPIENT_EMAIL']  # Recipient email address (can be unverified if in production mode)
 SUBJECT = 'Test Email from AWS Lambda'
