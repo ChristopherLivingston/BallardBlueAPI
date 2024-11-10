@@ -15,6 +15,37 @@ Globals:
     LoggingConfig:
       LogFormat: JSON
 Resources:
+  SendEmailRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaLoggingPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+
+        # If your Lambda function needs SES permissions, add them here
+        - PolicyName: SendEmailPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ses:SendEmail"
+                Resource: "arn:aws:ses:us-west-2:654654614431:identity/*"
   SendEmailFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -53,6 +84,6 @@ Outputs:
   SendEmailFunction:
     Description: Send Email Lambda Function ARN
     Value: !GetAtt SendEmailFunction.Arn
-  HelloWorldFunctionIamRole:
+  SendEmailFunctionIamRole:
     Description: Implicit IAM Role created for Send Email function
-    Value: !GetAtt SendEmailFunctionRole.Arn
+    Value: !GetAtt SendEmailRole.Arn
