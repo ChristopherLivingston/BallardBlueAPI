@@ -14,6 +14,7 @@ Globals:
     # You can add LoggingConfig parameters such as the Logformat, Log Group, and SystemLogLevel or ApplicationLogLevel. Learn more here https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html#sam-function-loggingconfig.
     LoggingConfig:
       LogFormat: JSON
+
 Resources:
   SendEmailRole:
     Type: AWS::IAM::Role
@@ -46,6 +47,7 @@ Resources:
                 Action:
                   - "ses:SendEmail"
                 Resource: "arn:aws:ses:us-west-2:654654614431:identity/*"
+
   SendEmailFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -54,6 +56,7 @@ Resources:
       Runtime: python3.9
       Architectures:
       - x86_64
+      Role: !GetAtt SendEmailRole.Arn
       Events:
         SendEmail:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -74,6 +77,7 @@ Resources:
       ResourceGroupName:
         Ref: ApplicationResourceGroup
       AutoConfigurationEnabled: 'true'
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
