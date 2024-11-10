@@ -46,7 +46,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - "ses:SendEmail"
-                Resource: "arn:aws:ses:us-west-2:654654614431:identity/*"
+                Resource:
+                  - "arn:aws:ses:us-west-2:654654614431:identity/*"
+                  - "arn:aws:ses:us-west-2:654654614431:configuration-set/*"
 
   SendEmailFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
