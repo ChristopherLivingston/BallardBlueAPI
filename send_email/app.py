@@ -1,46 +1,35 @@
 import json
 import boto3
-import os
 from botocore.exceptions import ClientError
 
 ses_client = boto3.client('ses', region_name='us-west-2')
 
-#SENDER = os.environ['SENDER_EMAIL']  # Sender email address (must be verified in SES)
-#RECIPIENT = os.environ['RECIPIENT_EMAIL']  # Recipient email address (can be unverified if in production mode)
-SUBJECT = 'Test Email from AWS Lambda'
-BODY_TEXT = 'This is a test email sent from AWS Lambda using Amazon SES.'
-BODY_HTML = """
-<html>
-  <head></head>
-  <body>
-    <h1>This is a test email sent from AWS Lambda using Amazon SES.</h1>
-  </body>
-</html>
-"""
-
 def lambda_handler(event, context):
-    """Sample pure Lambda function
+    email = event.get('queryStringParameters', {}).get('email')
+    message = event.get('queryStringParameters', {}).get('message')
 
-    Parameters
-    ----------
-    event: dict, required
-        API Gateway Lambda Proxy Input Format
+    if not email or not message:
+        # Identify which parameter is missing
+        missing_param = "email" if not email else "message"
 
-        Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
+        return {
+            'statusCode': 400,
+            'body': f'{{"error": "Missing required parameter: {missing_param}"}}',
+            'headers': {'Content-Type': 'application/json'}
+        }
 
-    context: object, required
-        Lambda Context runtime methods and attributes
-
-        Context doc: https://docs.aws.amazon.com/lambda/latest/dg/python-context-object.html
-
-    Returns
-    ------
-    API Gateway Lambda Proxy Output Format: dict
-
-        Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
+    SUBJECT = 'Contact from Ballard-Blue'
+    BODY_TEXT = ""
+    BODY_HTML = f"""
+    <html>
+      <head></head>
+      <body>
+        <p><strong>Email:</strong> {email}</p>
+        <p><strong>Message:</strong> {message}</p>
+      </body>
+    </html>
     """
 
-    # Construct the email message
     message = {
         'Source': 'ballardbluellc@gmail.com',
         'Destination': {
@@ -62,14 +51,12 @@ def lambda_handler(event, context):
     }
 
     try:
-        # Send the email using SES
         response = ses_client.send_email(
             Source=message['Source'],
             Destination=message['Destination'],
             Message=message['Message']
         )
 
-        # Log the response from SES (optional for debugging)
         print(f"Email sent! Message ID: {response['MessageId']}")
 
         return {
