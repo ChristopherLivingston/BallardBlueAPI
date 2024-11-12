@@ -50,6 +50,40 @@ Resources:
                   - "arn:aws:ses:us-west-2:654654614431:identity/*"
                   - "arn:aws:ses:us-west-2:654654614431:configuration-set/*"
 
+  GetRandomCardRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaLoggingPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "*"
+
+        # If your Lambda function needs SES permissions, add them here
+        - PolicyName: GetRandomCardRole
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "ses:SendEmail"
+                Resource:
+                  - "arn:aws:ses:us-west-2:654654614431:identity/*"
+                  - "arn:aws:ses:us-west-2:654654614431:configuration-set/*"
+
   SendEmailFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -64,6 +98,22 @@ Resources:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /send_email
+            Method: get
+
+  GetRandomCardFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: get_random/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+      - x86_64
+      Role: !GetAtt GetRandomCardRole.Arn
+      Events:
+        SendEmail:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /get_random
             Method: get
 
   ApplicationResourceGroup:
