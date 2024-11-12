@@ -105,6 +105,7 @@ Resources:
       CodeUri: get_random/
       Handler: app.lambda_handler
       Runtime: python3.9
+      Timeout: 10
       Architectures:
       - x86_64
       Role: !GetAtt GetRandomCardRole.Arn
