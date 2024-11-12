@@ -1,38 +1,43 @@
 import json
 import boto3
-import random
-
-from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
+
+dynamodb = boto3.client('dynamodb', region_name='us-west-2')
 
 
 def get_random():
+    print("In get_random")
     try:
-        dynamodb = boto3.client('dynamodb', region_name='us-west-2')
         response = dynamodb.scan(TableName='magic_inventory')
+        print(str(response))
         items = response.get('Items', [])
         if items[0]:
+            print("successful return")
             return {
                 "status": "success",
                 'card_name': items[0]['card_name']['S'],
                 'set_name': items[0]['set_name']['S']
             }
         else:
+            print("not successful return")
             raise ValueError("No items found in the table.")
 
     except ClientError as e:
+        print("ClientError")
         return {
             "status": "failure",
             "error": str(e)
         }
 
     except ValueError as e:
+        print("ValueError")
         return {
             "status": "failure",
             "error": str(e)
         }
 
     except Exception as e:
+        print("Exception")
         return {
             "status": "failure",
             "error": str(e)
