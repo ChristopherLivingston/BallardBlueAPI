@@ -8,6 +8,8 @@ def lambda_handler(event, context):
     email = event.get('queryStringParameters', {}).get('email')
     message = event.get('queryStringParameters', {}).get('message')
 
+    #delete me
+
     if not email or not message:
         # Identify which parameter is missing
         missing_param = "email" if not email else "message"
