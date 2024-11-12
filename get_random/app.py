@@ -13,6 +13,7 @@ def get_random():
         items = response.get('Items', [])
         if items[0]:
             return {
+                "status": "success",
                 'card_name': items[0]['card_name']['S'],
                 'set_name': items[0]['set_name']['S']
             }
@@ -20,19 +21,22 @@ def get_random():
             raise ValueError("No items found in the table.")
 
     except ClientError as e:
-        # Handle AWS service related errors
-        print(f"An error occurred with DynamoDB: {e}")
-        return None
+        return {
+            "status": "failure",
+            "error": str(e)
+        }
 
     except ValueError as e:
-        # Handle specific ValueError if no items are found
-        print(f"Error: {e}")
-        return None
+        return {
+            "status": "failure",
+            "error": str(e)
+        }
 
     except Exception as e:
-        # Handle any other unexpected errors
-        print(f"An unexpected error occurred: {e}")
-        return None
+        return {
+            "status": "failure",
+            "error": str(e)
+        }
 
 
 def lambda_handler(event, context):
