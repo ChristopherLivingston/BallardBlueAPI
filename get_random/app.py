@@ -1,43 +1,53 @@
 import json
 import boto3
+import random
+import uuid
 from botocore.exceptions import ClientError
 
 dynamodb = boto3.client('dynamodb', region_name='us-west-2')
 
 
 def get_random():
-    print("In get_random")
     try:
-        response = dynamodb.scan(TableName='magic_inventory')
-        print(str(response))
-        items = response.get('Items', [])
-        if items[0]:
-            print("successful return")
+        random_uuid = str(uuid.uuid4())
+        response = dynamodb.scan(
+            TableName='magic_inventory',
+            FilterExpression='row_id > :random_uuid',
+            ExpressionAttributeValues={
+                ':random_uuid': {'S': random_uuid}
+            },
+            Limit=100
+        )
+        if 'Items' in response:
+            item_count = response['Count']
+            random_index = 0
+            if item_count > 0:
+                random_index = random.randint(0, item_count-1)
+            items = response.get('Items', [])
             return {
                 "status": "success",
-                'card_name': items[0]['card_name']['S'],
-                'set_name': items[0]['set_name']['S']
+                'card_name': items[random_index]['card_name']['S'],
+                'set_name': items[random_index]['set_name']['S']
             }
         else:
-            print("not successful return")
             raise ValueError("No items found in the table.")
 
     except ClientError as e:
-        print("ClientError")
+        print("ClientError: " + str(e))
         return {
             "status": "failure",
             "error": str(e)
         }
 
     except ValueError as e:
-        print("ValueError")
+        print("ValueError: " + str(e))
         return {
             "status": "failure",
             "error": str(e)
         }
 
     except Exception as e:
-        print("Exception")
+        print("Exception: " + str(e))
         return {
             "status": "failure",
             "error": str(e)
