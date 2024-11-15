@@ -16,7 +16,7 @@ def get_random():
             ExpressionAttributeValues={
                 ':random_uuid': {'S': random_uuid}
             },
-            Limit=100
+            Limit=200
         )
         if 'Items' in response:
             item_count = response['Count']
